@@ -23,6 +23,10 @@ def hi(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.message.chat_id, text="You are not allowed to use that function!")
 
 def sleepKb(update, context):
+    if update.message.from_user.id != MYSELF:
+        context.bot.send_message(chat_id=update.message.chat_id, text="You are not allowed to use that function!")
+        return
+
     keyboard = [[InlineKeyboardButton("Wakeup", callback_data='wakeup'),
                  InlineKeyboardButton("Standup", callback_data='standup')],
                 [InlineKeyboardButton("Go to bed", callback_data='gotobed'),
