@@ -7,12 +7,13 @@ import random
 from serializers import serialize_sleep
 from commenters import *
 
-MYSELF = os.environ['TM']
+MYSELF = int(os.environ['TELE_ID'])
 TOKEN = os.environ['SYL_KEY']
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 def start(update: Update, context: CallbackContext):
+    print(update.message.chat_id)
     context.bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!")
 
 def hi(update: Update, context: CallbackContext):
