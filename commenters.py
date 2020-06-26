@@ -59,15 +59,15 @@ class GotoBedComment(SleepComment):
         if msg:
             return msg
 
-waC = WakeupComment((6, 30), (11, 30), [[7, 0, i18n.t('comment.w1')], [8, 0, i18n.t('comment.w2')]])
-gbC = GotoBedComment((19, 30), (1, 30), [[20, 15, i18n.t('comment.b1')], [20, 45, i18n.t('comment.b2')]])
+waC = WakeupComment((5, 30), (11, 30), [[6, 0, i18n.t('comment.w1')], [7, 0, i18n.t('comment.w2')], [8, 0, i18n.t('comment.w3')]])
+gbC = GotoBedComment((19, 30), (1, 30), [[20, 15, i18n.t('comment.b1')], [20, 45, i18n.t('comment.b2')], [21, 45, i18n.t('comment.b3')], [22, 15, i18n.t('comment.b4')], [23, 00, i18n.t('comment.b5')]])
 
 def get_time_comment(time, typ):
     dtime = get_time_from_string(time)
 
-    if typ == ("wakeup" or "standup"):
+    if typ == ("wakeup" or "standup" or "toothbrush_morning"):
         waC.update()
         return waC.get_msg(dtime)
-    elif typ == ("gotobed" or "handyaway"):
+    elif typ == ("gotobed" or "handyaway" or "toothbrush_evening"):
         gbC.update()
         return gbC.get_msg(dtime)
