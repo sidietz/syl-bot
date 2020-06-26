@@ -71,3 +71,5 @@ def get_time_comment(time, typ):
     elif typ == ("gotobed" or "handyaway" or "toothbrush_evening"):
         gbC.update()
         return gbC.get_msg(dtime)
+    else:
+        return ""
