@@ -1,13 +1,21 @@
 en:
-  latest: " is very late!"
+  latest: " is post noon!"
   earliest: "\nDamn, your are early! ;)"
 
-  w1: " Hi, early bird!"
-  w2: " Too late for work!"
+  w1: " Hi, you compete with farmers!"
+  w2: " Hi, early bird!"
+  w3: " Early for work!"
+  w4: " Too late for work!"
+  w5: " Too late for the voice call!"
+  w6: " Someone's there?"
+  w7: " Dude, noon's approaching"
+  w8: " Dude, it's nearly noon"
 
   b1: " You miss the news ;)"
   b2: " No primetime TV? ;)"
   b3: " No late night news?"
   b4: " That's a nice time!"
   b5: " Has been a long day, hasn't it?"
+  b6: " Jetzt aber schnell!"
+  b7: " Heute ist nicht Silverster!"
 

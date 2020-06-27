@@ -51,8 +51,10 @@ def sleepCb(update, context):
     status, values = serialize_sleep(sleep_type)
     time, typ = values[0], values[1]
 
+
+    _, comment = get_time_comment(time, typ)
     msg = "{} wurde um erfasst um: {} ".format(typ, time)
-    msg += "\n" + get_time_comment(time, typ)
+    msg += "\n" + comment
 
     query.answer()
 
