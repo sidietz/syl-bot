@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters, InlineQueryHandler, CallbackContext
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters, InlineQueryHandler, CallbackContext, ConversationHandler
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Update
 import logging
 import random
 
-from serializers import serialize_sleep
+from serializers import serialize_sleep, serialize_event
 from commenters import *
 
 MYSELF = int(os.environ['TELE_ID'])
 TOKEN = os.environ['SYL_KEY']
+
+FIRST, SECOND = range(2)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -21,6 +23,39 @@ def hi(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.message.chat_id, text="Hi!")
     else:
         context.bot.send_message(chat_id=update.message.chat_id, text="You are not allowed to use that function!")
+
+def eventKb(update: Update, context: CallbackContext):
+    if update.message.from_user.id != MYSELF:
+        context.bot.send_message(chat_id=update.message.chat_id, text="You are not allowed to use that function!")
+        return
+
+    keyboard = [[InlineKeyboardButton("1", callback_data="1"),
+                 InlineKeyboardButton("2", callback_data="2")],
+                [InlineKeyboardButton("3", callback_data="3"),
+                InlineKeyboardButton("4", callback_data="4")],
+                [InlineKeyboardButton("5", callback_data="5")]
+                ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text('Please choose event intensity:', reply_markup=reply_markup)
+    return FIRST
+
+def eventCb(update, context):
+    query = update.callback_query
+
+    intensity = query.data
+
+    status, values = serialize_event(intensity)
+    time, typ = values[0], values[1]
+
+    msg = "{} wurde um erfasst um: {} ".format(typ, time)
+
+    query.answer()
+
+    query.edit_message_text(text=msg)
+    return ConversationHandler.END
+
 
 def sleepKb(update, context):
     if update.message.from_user.id != MYSELF:
@@ -42,6 +77,7 @@ def sleepKb(update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     update.message.reply_text('Please choose:', reply_markup=reply_markup)
+    return FIRST
 
 def sleepCb(update, context):
     query = update.callback_query
@@ -59,6 +95,33 @@ def sleepCb(update, context):
     query.answer()
 
     query.edit_message_text(text=msg)
+    return ConversationHandler.END
+
+def cancel(update, context):
+    user = update.message.from_user
+    logger.info("User %s canceled the conversation.", user.first_name)
+    update.message.reply_text('Bye! I hope we can talk again some day.',
+                              reply_markup=ReplyKeyboardRemove())
+
+    return ConversationHandler.END
+
+sleepH = ConversationHandler(
+    entry_points=[CommandHandler('sleep', sleepKb)],
+    states={
+        FIRST: [CallbackQueryHandler(sleepCb)],
+    },
+    fallbacks=[CommandHandler('cancel', cancel)]
+)
+
+eventH = ConversationHandler(
+    entry_points=[CommandHandler('event', eventKb)],
+    states={
+        FIRST: [CallbackQueryHandler(eventCb)],
+    },
+    fallbacks=[CommandHandler('cancel', cancel)]
+)
+
+
 
 def main():
 
@@ -68,8 +131,9 @@ def main():
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(CommandHandler('hi', hi))
-    updater.dispatcher.add_handler(CommandHandler('sleep', sleepKb))
-    updater.dispatcher.add_handler(CallbackQueryHandler(sleepCb))
+
+    updater.dispatcher.add_handler(sleepH)
+    updater.dispatcher.add_handler(eventH)
 
     updater.start_polling()
 
